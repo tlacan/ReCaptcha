@@ -174,6 +174,7 @@ public class ReCaptcha {
     /// Stops the execution of the webview
     public func stop() {
         manager.stop()
+        manager.webView.removeFromSuperview()
     }
 
 
