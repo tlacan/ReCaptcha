@@ -102,9 +102,7 @@ internal class ReCaptchaWebViewManager {
      */
     init(html: String, apiKey: String, baseURL: URL, endpoint: String) {
         self.endpoint = endpoint
-        self.decoder = ReCaptchaDecoder { [weak self] result in
-            self?.handle(result: result)
-        }
+        self.decoder = ReCaptchaDecoder(webViewManager: self)
 
         let formattedHTML = String(format: html, arguments: ["apiKey": apiKey, "endpoint": endpoint])
 
@@ -163,7 +161,7 @@ internal class ReCaptchaWebViewManager {
 
 /** Private methods for ReCaptchaWebViewManager
  */
-fileprivate extension ReCaptchaWebViewManager {
+extension ReCaptchaWebViewManager {
     /**
      - returns: An instance of `WKWebViewConfiguration`
 
