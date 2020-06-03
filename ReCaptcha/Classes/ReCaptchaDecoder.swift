@@ -32,16 +32,15 @@ internal class ReCaptchaDecoder: NSObject {
         case log(String)
     }
 
-    /// The closure that receives messages
-    fileprivate let sendMessage: ((Result) -> Void)
+    let webViewManager: ReCaptchaWebViewManager
 
     /**
      - parameter didReceiveMessage: A closure that receives a ReCaptchaDecoder.Result
 
      Initializes a decoder with a completion closure.
      */
-    init(didReceiveMessage: @escaping (Result) -> Void) {
-        sendMessage = didReceiveMessage
+    init(webViewManager: ReCaptchaWebViewManager) {
+        self.webViewManager = webViewManager
 
         super.init()
     }
@@ -53,7 +52,7 @@ internal class ReCaptchaDecoder: NSObject {
      Sends an error to the completion closure
      */
     func send(error: ReCaptchaError) {
-        sendMessage(.error(error))
+        webViewManager.handle(result: .error(error))
     }
 }
 
@@ -65,10 +64,9 @@ internal class ReCaptchaDecoder: NSObject {
 extension ReCaptchaDecoder: WKScriptMessageHandler {
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         guard let dict = message.body as? [String: Any] else {
-            return sendMessage(.error(.wrongMessageFormat))
+            return webViewManager.handle(result: .error(.wrongMessageFormat))
         }
-
-        sendMessage(Result.from(response: dict))
+        webViewManager.handle(result: Result.from(response: dict))
     }
 }
 
